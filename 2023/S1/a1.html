@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Assignment 1</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>    
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.min.js"></script>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Div which will hold the Output -->
+<div id="WebGL-output"></div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+    // once everything is loaded, we run our Three.js stuff.
+
+    // create a scene, that will hold all our elements such as objects, cameras.
+    var scene = new THREE.Scene();
+
+    // create a camera, which defines where we're looking at.
+    var camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 500;
+
+    // create a render and set the size
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(new THREE.Color(0x00c9d0));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    renderer.shadowMapEnabled = true;
+
+    // create group
+	var group = new THREE.Object3D();
+
+	//-----------------------------------create the ground plane-----------------------------------------------
+    // create a plane
+    var planeGeometry = new THREE.PlaneGeometry(90, 90);
+    var planeMaterial = new THREE.MeshBasicMaterial({color: 0x80ca30});
+    var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    // rotate and position the plane
+    plane.rotation.x = -0.5 * Math.PI;
+    plane.position.x = 8.5;
+    plane.position.y = -12;
+    plane.position.z = -8;
+    // add the plane to the group
+    group.add(plane); 
+    plane.receiveShadow = true;  
+
+    //---------------------------------------create water tank-------------------------------------------------
+    // create the tank
+    var tankGeometry = new THREE.CylinderGeometry(4, 4, 4, 100, 20);
+    var tankMaterial = new THREE.MeshBasicMaterial({color: 0x7d807a, wireframe: false});
+    var tank = new THREE.Mesh(tankGeometry, tankMaterial);
+    // position the tank
+    tank.position.x = 10;
+    tank.position.y = -10;
+    tank.position.z = -3;
+    tank.castShadow = true;
+    // add the tank to the group
+    group.add(tank);
+    tank.castShadow = true;
+
+    // create the water
+	var waterGeometry = new THREE.CircleGeometry(3, 100);   
+	var waterMaterial = new THREE.MeshBasicMaterial({color: 0x294fde , wireframe: false});
+	var water = new THREE.Mesh(waterGeometry, waterMaterial);
+	// rotate and position the water
+	water.rotation.x = - Math.PI/2;
+	water.position.x = 10;
+	water.position.y = -7.9;
+	water.position.z = -3;
+	// add the water to the group
+	group.add(water);
+
+	//---------------------------------------create barn---------------------------------------------------------
+    // create the barn prism roof
+	var roofGeometry = new THREE.BoxGeometry(6, 5.32, 19.9);
+    var roofMaterial = new THREE.MeshBasicMaterial({color: 'red', wireframe: false});
+    var roof = new THREE.Mesh(roofGeometry, roofMaterial);
+    roof.rotation.z = -.23 * Math.PI;
+    // position the prism roof
+    roof.position.x = -6;
+    roof.position.y = -6.7;
+    roof.position.z = -4.7;
+    // add the prism roof to the scene
+    group.add(roof);
+    roof.castShadow = true;
+
+    // create a barn structure
+    var structureGeometry = new THREE.BoxGeometry(8, 5.32, 20);
+    var structureMaterial = new THREE.MeshBasicMaterial({color: 0x646464, wireframe: false});
+    var structure = new THREE.Mesh(structureGeometry, structureMaterial);
+    // position the barn structure
+    structure.position.x = -6;
+    structure.position.y = -9.4;
+    structure.position.z = -4.7;
+    // add the barn structure to the scene
+    group.add(structure);
+    structure.castShadow = true;
+        //--------------------------------------create trees---------------------------------------------------------
+        // create the first tree trunk #1f9b00
+        var poleGeometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 10, 20);
+        var poleMaterial = new THREE.MeshBasicMaterial({ color:0x8d5e0d });
+        planeMaterial = new THREE.MeshBasicMaterial({color: '#1f9b00'});
+        var pole = new THREE.Mesh(poleGeometry, poleMaterial);
+		var treeGroup = new THREE.Object3D();
+        var trunkGeometry = new THREE.CylinderGeometry(1, 1, 5, 100, 20);
+        var trunk1 = new THREE.Mesh(trunkGeometry, poleMaterial);
+        // position the trunk
+        trunk1.position.x = 6;
+        trunk1.position.y = -9.5;
+        trunk1.position.z = -20;
+        // add the trunk to the group
+        treeGroup.add(trunk1);
+        trunk1.castShadow = true;
+
+        // create the tree leafs
+        var leafGeometry = new THREE.ConeGeometry(4, 10, 32);
+
+        var leaf1 = new THREE.Mesh(leafGeometry, planeMaterial);
+        // position the leafs
+        leaf1.position.x = 6;
+        leaf1.position.y = -4;
+        leaf1.position.z = -20;
+        //level 2:
+        var leafl2 = leaf1.clone();
+        // position the leaves
+        leafl2.position.x = 6;
+        leafl2.position.y = 0;
+        leafl2.position.z = -20;
+        // add the leaves to the group
+        treeGroup.add(leafl2);
+        treeGroup.add(leaf1);
+        leaf1.castShadow = true;
+
+        var leafl3 = leaf1.clone();
+        // position the leaves
+        leafl3.position.x = 6;
+        leafl3.position.y = 4;
+        leafl3.position.z = -20;
+        // add the leaves to the group
+        treeGroup.add(leafl3);
+		treeGroup.position.z=-10;
+		treeGroup.position.x=6;
+		group.add(treeGroup);
+
+        // create the second tree trunk
+var treeGroup2 = treeGroup.clone();
+treeGroup2.position.z=-5;
+treeGroup2.position.z = -4
+        group.add(treeGroup2);
+treeGroup.position.x=-16
+        // create the third trunk
+        var trunk3 = trunk1.clone();
+        // position the trunk
+        trunk3.position.x = 5;
+        trunk3.position.y = -11;
+        trunk3.position.z = 5;
+        trunk3.scale.set(0.5, 0.5, 0.5);
+        // add the trunk to the group
+        group.add(trunk3);
+        trunk3.castShadow = true;
+
+        // create the third tree leafs
+        var leaf3 = leaf1.clone();
+        leaf3.scale.set(0.5, 0.5, 0.5);
+        // position the leafs
+        leaf3.position.x = 5;
+        leaf3.position.y = -9;
+        leaf3.position.z = 5;
+        leaf3.castShadow = true;
+        // add the leafs to the group
+        group.add(leaf3);
+
+        var leaf3l2 = leaf1.clone();
+        // position the leafs
+        leaf3l2.scale.set(0.5, 0.5, 0.5);
+        leaf3l2.position.x = 5;
+        leaf3l2.position.y = -7;
+        leaf3l2.position.z = 5;
+        leaf3l2.castShadow = true;
+        // add the leafs to the group
+        group.add(leaf3l2);
+
+	
+    //-----------------position and point the camera to the center of the scene----------------------------------
+    // position the camera
+    camera.position.x = -120;
+    camera.position.y = 40;
+    camera.position.z = 110;
+    camera.lookAt(scene.position);
+
+    // add the group to the scene
+	scene.add(group);
+    //-------------------------------------Manipulating the keyboard keys----------------------------------------
+var options = {
+  velx: 0,
+  vely: 0,
+  camera: {
+    speed: 0.0001
+  },
+  stop: function() {
+    this.velx = 0;
+    this.vely = 0;
+  }, zoom: 1.7,
+  rotation: 0,
+  speed:0.1,
+  'Start/Stop':function(){
+            if(options.rotation > 0)
+		options.rotation = 0;
+        else
+        options.rotation = 0.1;
+	},
+  'Change Direction':function(){
+	if(direction > 0) direction = -1; else direction = 	1;	
+	}
+};	
+    // variable declaration
+	var direction = 1;
+	
+	toggleRotationDirection = function(){
+	if(direction > 0) direction = -1; else direction = 	1;	
+	}	
+    
+var gui = new dat.GUI();
+gui.add(options, 'zoom', 0.1, 10); // Min and max
+gui.add(options, 'Start/Stop');
+gui.add(options, 'Change Direction');
+gui.add(options, 'speed', 0.1, 1); // Min and max
+
+	function render() {
+		requestAnimationFrame( render );
+
+		if (options.zoom < 0)
+        options.zoom = 0;
+
+    	if (options.zoom > 10)
+        options.zoom = 10;
+  		camera.zoom = options.zoom;
+        group.rotation.y += (direction * options.rotation * options.speed);
+  		camera.updateProjectionMatrix();
+		renderer.render( scene, camera );
+	}
+	render();
+	
+
+	//menu:
+	
+</script>
+</body>
+</html>
